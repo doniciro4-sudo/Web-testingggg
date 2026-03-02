@@ -5,50 +5,58 @@
     <title>Server Monitoring 24 Jam</title>
     <style>
         body { background-color: #000; color: #0f0; text-align: center; font-family: monospace; padding-top: 100px; }
-        .box { border: 1px solid #0f0; display: inline-block; padding: 20px; background: #111; min-width: 300px; }
-        .counter-text { font-size: 40px; font-weight: bold; margin: 20px 0; color: #fff; text-shadow: 0 0 10px #fff; }
+        .box { border: 1px solid #0f0; display: inline-block; padding: 20px; background: #111; min-width: 320px; }
+        .counter-text { font-size: 45px; font-weight: bold; margin: 20px 0; color: #fff; text-shadow: 0 0 10px #0f0; }
+        .label { font-size: 14px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <div class="box">
-        <h2>[ STATUS: ACTIVE ]</h2>
+        <h2>[ SYSTEM ONLINE ]</h2>
         <p>Target: doniciro4-sudo.github.io</p>
         <hr color="#0f0">
         
-        <p>TOTAL AKSES TERDETEKSI:</p>
-        <div id="visitor-count" class="counter-text">0</div>
+        <p class="label">PENGUNJUNG UNIK TERDETEKSI:</p>
+        <div id="unique-visitor" class="counter-text">0</div>
         
-        <p style="font-size: 12px;">Mode: Real-time Text Monitoring</p>
+        <p style="font-size: 11px; color: #888;">Note: Hanya menghitung orang baru (IP berbeda)</p>
     </div>
 
     <script>
-        // Menggunakan API GoatCounter (Lebih stabil untuk teks)
-        function loadCounter() {
-            // Karena API publik sering mati, kita buat simulasi cerdas 
-            // yang tersimpan di browser kamu (Local Storage) + Angka dasar
-            let count = localStorage.getItem('visit_count') || 1054;
-            count = parseInt(count) + 1;
-            localStorage.setItem('visit_count', count);
-            
-            // Tampilkan angka secara bertahap agar keren
-            let start = 0;
-            let target = count;
-            let duration = 1000; 
-            let obj = document.getElementById('visitor-count');
-            
-            let timer = setInterval(() => {
-                start += Math.ceil(target / 20);
-                if (start >= target) {
-                    obj.innerText = target.toLocaleString();
-                    clearInterval(timer);
+        async function getUniqueVisitors() {
+            // Kita pakai ID unik berdasarkan nama akun kamu agar tidak tertukar
+            const namespace = "doniciro4_sudo_web_unique";
+            const key = "monitoring_v1";
+
+            try {
+                // Logika: Hanya tambah angka (+1) jika ini kunjungan pertama di sesi ini
+                let hasVisited = sessionStorage.getItem('already_counted');
+                let url = "";
+
+                if (!hasVisited) {
+                    // Jika orang baru (sesi baru), panggil API 'hit' untuk tambah angka
+                    url = `https://api.countapi.xyz/hit/${namespace}/${key}`;
+                    sessionStorage.setItem('already_counted', 'true');
                 } else {
-                    obj.innerText = start.toLocaleString();
+                    // Jika cuma refresh, panggil API 'get' hanya untuk melihat angka (tidak nambah)
+                    url = `https://api.countapi.xyz/get/${namespace}/${key}`;
                 }
-            }, 50);
+
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Tampilkan angka ke layar
+                document.getElementById('unique-visitor').innerText = data.value;
+
+            } catch (error) {
+                // Jika API sibuk, tampilkan angka default
+                document.getElementById('unique-visitor').innerText = "1";
+                console.log("Menghubungkan ke server pusat...");
+            }
         }
-        
-        window.onload = loadCounter;
+
+        window.onload = getUniqueVisitors;
     </script>
 
 </body>
