@@ -6,65 +6,56 @@ async function fetchVideo() {
     const errorMsg = document.getElementById('errorMsg');
 
     const url = input.value.trim();
-    if (!url) return alert("Tempel link-nya dulu, Bos!");
+    if (!url) return alert("Tempel link-nya dulu!");
 
-    // Reset UI & Loading
-    btn.innerText = "🔍 Mencari Video...";
+    btn.innerText = "🔍 Sedang Mencari...";
     btn.disabled = true;
     resultDiv.classList.add('hidden');
     errorMsg.classList.add('hidden');
 
     try {
-        let apiUrl = "";
+        // Kita pakai API Multi yang lebih luas dukungannya
+        // Menggunakan bantuan proxy 'cors-anywhere' jika diperlukan
+        const apiRes = await fetch(`https://api.vkrfork.com/api/v1/all?url=${encodeURIComponent(url)}`);
         
-        // LOGIKA PEMILIHAN API
-        if (url.includes("tiktok.com")) {
-            // Pakai TikWM (Paling Stabil buat TikTok)
-            apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`;
-        } else if (url.includes("instagram.com")) {
-            // Pakai API Publik Instagram (Kadang perlu refresh kalau gagal)
-            apiUrl = `https://api.vkrfork.com/api/v1/instagram?url=${encodeURIComponent(url)}`;
-        } else {
-            throw new Error("Maaf, saat ini baru mendukung TikTok & Instagram.");
+        if (!apiRes.ok) throw new Error("Gagal menyambung ke server.");
+        
+        const data = await apiRes.json();
+
+        // Ambil link video terbaik (biasanya ada di urutan pertama)
+        let videoUrl = "";
+        if (data.data && data.data.main_url) {
+            videoUrl = data.data.main_url;
+        } else if (data.url) {
+            videoUrl = data.url;
+        } else if (data.medias) {
+            videoUrl = data.medias[0].url;
         }
 
-        const response = await fetch(apiUrl);
-        const json = await response.json();
+        if (!videoUrl) throw new Error("Video tidak ditemukan. Pastikan akun tidak diprivat.");
 
-        let finalVideoUrl = "";
-
-        // AMBIL LINK BERDASARKAN SUMBERNYA
-        if (url.includes("tiktok.com") && json.code === 0) {
-            finalVideoUrl = json.data.play;
-        } else if (url.includes("instagram.com") && json.data && json.data.main_url) {
-            finalVideoUrl = json.data.main_url;
-        } else {
-            throw new Error("Video tidak ditemukan atau link salah.");
-        }
-
-        // FUNGSI DOWNLOAD (TETAP DI WEB KAMU)
+        // Pasang link ke tombol
         downloadBtn.onclick = async (e) => {
             e.preventDefault();
             downloadBtn.innerText = "📥 Mengunduh...";
             
             try {
-                const res = await fetch(finalVideoUrl);
+                const res = await fetch(videoUrl);
                 const blob = await res.blob();
                 const localUrl = URL.createObjectURL(blob);
                 
                 const a = document.createElement('a');
                 a.href = localUrl;
-                a.download = `Downloader_${Date.now()}.mp4`;
+                a.download = `VGet_${Date.now()}.mp4`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(localUrl);
-                
-                downloadBtn.innerText = "✅ Berhasil!";
+                downloadBtn.innerText = "✅ Selesai!";
             } catch (err) {
-                // Jika kena blokir keamanan browser, buka tab baru
-                window.open(finalVideoUrl, '_blank');
-                downloadBtn.innerText = "Klik Disini (Manual)";
+                // Jika diblokir browser, langsung buka link aslinya
+                window.open(videoUrl, '_blank');
+                downloadBtn.innerText = "Simpan ke Galeri";
             }
         };
 
@@ -72,7 +63,7 @@ async function fetchVideo() {
         downloadBtn.innerText = "Download Video";
 
     } catch (err) {
-        errorMsg.innerText = err.message;
+        errorMsg.innerText = "Error: " + err.message;
         errorMsg.classList.remove('hidden');
     } finally {
         btn.innerText = "Ambil Video";
