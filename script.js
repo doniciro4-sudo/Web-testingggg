@@ -19,18 +19,19 @@ async function fetchVideo() {
     errorMsg.classList.add('hidden');
 
     try {
-        // Menggunakan API TikWM (Sangat bagus untuk TikTok)
+        // Menggunakan API TikWM
         const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
         const result = await response.json();
 
         if (result.code === 0) {
-            // Jika berhasil
-            const videoUrl = "https://www.tikwm.com" + result.data.play;
+            // PERBAIKAN DI SINI:
+            // Kita ambil link video langsung dari data play tanpa menambah domain lagi
+            const videoUrl = result.data.play; 
+            
             downloadBtn.href = videoUrl;
             resultDiv.classList.remove('hidden');
         } else {
-            // Jika link bukan TikTok atau ada masalah lain
-            throw new Error("Gagal mengambil video. Pastikan link benar (khusus TikTok).");
+            throw new Error("Gagal mengambil video. Link mungkin salah atau video diprivat.");
         }
     } catch (err) {
         errorMsg.innerText = err.message;
