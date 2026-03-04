@@ -3,50 +3,55 @@ async function fetchVideo() {
     const btn = document.getElementById('btnAction');
     const resultDiv = document.getElementById('result');
     const downloadBtn = document.getElementById('downloadBtn');
+    const errorBox = document.getElementById('errorBox');
     const errorMsg = document.getElementById('errorMsg');
 
     const url = input.value.trim();
-    if (!url) return alert("Tempel link-nya dulu!");
+    if (!url) return alert("Masukkan link-nya dulu!");
 
-    btn.innerText = "🔍 Mencari Video...";
+    // UI Loading State
+    btn.innerText = "⏳ Sedang Memproses...";
     btn.disabled = true;
     resultDiv.classList.add('hidden');
-    errorMsg.classList.add('hidden');
+    errorBox.classList.add('hidden');
 
     try {
-        // Kita pakai API yang berbeda khusus untuk Instagram & TikTok
-        // API ini lebih tahan banting terhadap blokir Instagram
-        const api = `https://api.vkrfork.com/api/v1/all?url=${encodeURIComponent(url)}`;
-        const response = await fetch(api);
-        const res = await response.json();
+        // Kita gunakan API yang lebih luas jangkauannya
+        const response = await fetch(`https://api.vkrfork.com/api/v1/all?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
 
-        let videoUrl = "";
+        let finalUrl = "";
 
-        // Cek data dari API
-        if (res.data && res.data.main_url) {
-            videoUrl = res.data.main_url;
-        } else if (res.url) {
-            videoUrl = res.url;
-        } else if (res.medias && res.medias[0]) {
-            videoUrl = res.medias[0].url;
+        // Logika Pengambilan URL (Multi-Source)
+        if (data.data && data.data.main_url) {
+            finalUrl = data.data.main_url;
+        } else if (data.url) {
+            finalUrl = data.url;
+        } else if (data.medias && data.medias[0]) {
+            finalUrl = data.medias[0].url;
         }
 
-        if (!videoUrl) throw new Error("Video tidak ditemukan atau akun privat.");
+        if (!finalUrl) throw new Error("Video tidak ditemukan atau link tidak publik.");
 
-        // --- CARA BARU: LANGSUNG KE SUMBER ---
-        // Karena Instagram memblokir "sedot data", kita kasih link aslinya saja
+        // Tombol Download
         downloadBtn.onclick = (e) => {
             e.preventDefault();
-            // Buka di tab baru agar user bisa 'Save Video As' atau klik titik tiga
-            window.open(videoUrl, '_blank');
+            
+            // Trik paksa download atau buka tab baru jika diblokir browser
+            const a = document.createElement('a');
+            a.href = finalUrl;
+            a.target = '_blank';
+            a.download = `Video_Downloaded_${Date.now()}.mp4`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         };
 
         resultDiv.classList.remove('hidden');
-        downloadBtn.innerText = "Klik Untuk Download (MP4)";
 
     } catch (err) {
-        errorMsg.innerText = "Gagal: " + err.message;
-        errorMsg.classList.remove('hidden');
+        errorMsg.innerText = "Error: " + err.message;
+        errorBox.classList.remove('hidden');
     } finally {
         btn.innerText = "Ambil Video";
         btn.disabled = false;
