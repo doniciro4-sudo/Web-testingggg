@@ -3,42 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V-Downloader Pro</title>
+    <title>MyDownloader - No Watermark</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #0f172a; color: white; }
-        .btn-glow:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        body { background-color: #0f172a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-6">
 
-    <div class="max-w-md w-full bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
-        <h1 class="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">V-Downloader</h1>
-        <p class="text-slate-400 text-center text-sm mb-6">TikTok & Instagram Downloader</p>
+    <div class="max-w-md w-full glass p-8 rounded-3xl shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                V-Get Pro
+            </h1>
+            <p class="text-slate-400 mt-2 text-sm text-balance">Download video TikTok tanpa watermark secara instan.</p>
+        </div>
 
         <div class="space-y-4">
-            <input type="text" id="videoUrl" placeholder="Tempel link video di sini..." 
-                class="w-full p-4 rounded-lg bg-slate-900 border border-slate-600 focus:outline-none focus:border-blue-500 text-white">
+            <input type="text" id="videoUrl" placeholder="Tempel link TikTok di sini..." 
+                class="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
             
             <button onclick="fetchVideo()" id="btnAction"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition duration-300 btn-glow">
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
                 Ambil Video
             </button>
         </div>
 
-        <div id="result" class="hidden mt-8 border-t border-slate-700 pt-6">
-            <div id="statusIcon" class="flex justify-center mb-2 text-green-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+        <div id="result" class="hidden mt-8 text-center space-y-4 animate-fade-in">
+            <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <p class="text-emerald-400 text-sm font-medium">✨ Video siap diunduh!</p>
             </div>
-            <a id="downloadLink" href="#" target="_blank"
-                class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition duration-300">
-                Download MP4 Sekarang
-            </a>
+            
+            <button id="downloadBtn" 
+                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all">
+                Simpan ke Galeri
+            </button>
         </div>
 
-        <p id="errorMsg" class="hidden text-red-500 text-center mt-4 text-sm"></p>
+        <p id="errorMsg" class="hidden text-red-400 text-center mt-4 text-xs italic"></p>
     </div>
 
     <script src="script.js"></script>
