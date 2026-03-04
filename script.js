@@ -1,70 +1,77 @@
 async function fetchVideo() {
     const input = document.getElementById('videoUrl');
     const btn = document.getElementById('btnAction');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
     const resultDiv = document.getElementById('result');
     const downloadBtn = document.getElementById('downloadBtn');
     const errorMsg = document.getElementById('errorMsg');
 
     const url = input.value.trim();
-    if (!url) return alert("Tempel link TikTok dulu!");
+    if (!url) {
+        input.classList.add('border-red-500');
+        setTimeout(() => input.classList.remove('border-red-500'), 1000);
+        return;
+    }
 
-    // UI Loading
-    btn.innerText = "⏳ Sedang Memproses...";
+    // STATE LOADING (Tanpa Emoji)
+    btnText.innerText = "SEDANG MEMPROSES";
+    btnLoader.classList.remove('hidden');
     btn.disabled = true;
     resultDiv.classList.add('hidden');
     errorMsg.classList.add('hidden');
 
     try {
-        // Panggil API TikWM
+        // Mengambil data dari API TikWM
         const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
-        
-        if (!response.ok) throw new Error("Gagal terhubung ke server API.");
-        
         const json = await response.json();
 
-        // Cek apakah data video ada
-        if (json && json.data && json.data.play) {
-            const videoUrl = json.data.play; 
+        if (json.code === 0) {
+            const videoUrl = json.data.play;
 
-            // Tombol Download Langsung
             downloadBtn.onclick = async (e) => {
                 e.preventDefault();
-                downloadBtn.innerText = "📥 Mengunduh...";
+                downloadBtn.innerText = "MENGUNDUH FILE...";
                 downloadBtn.disabled = true;
                 
                 try {
-                    // Cara paksa download agar masuk galeri
-                    const videoRes = await fetch(videoUrl);
-                    const blob = await videoRes.blob();
-                    const blobUrl = URL.createObjectURL(blob);
+                    const res = await fetch(videoUrl);
+                    const blob = await res.blob();
+                    const bUrl = URL.createObjectURL(blob);
                     
                     const a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.download = `TikTok_${Date.now()}.mp4`;
+                    a.href = bUrl;
+                    a.download = `TikSave_Video_${Date.now()}.mp4`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                    URL.revokeObjectURL(blobUrl);
                     
-                    downloadBtn.innerText = "✅ Berhasil Disimpan!";
+                    downloadBtn.innerText = "UNDUH SELESAI";
+                    setTimeout(() => {
+                        downloadBtn.innerText = "SIMPAN KE GALERI";
+                        downloadBtn.disabled = false;
+                    }, 2000);
                 } catch (err) {
-                    // Jika cara paksa gagal, buka di tab baru sebagai cadangan
+                    // Fallback jika fetch blob gagal
                     window.open(videoUrl, '_blank');
                     downloadBtn.innerText = "SIMPAN KE GALERI";
+                    downloadBtn.disabled = false;
                 }
-                downloadBtn.disabled = false;
             };
 
+            // Menampilkan hasil dengan efek transisi
             resultDiv.classList.remove('hidden');
+            resultDiv.classList.add('fade-up');
         } else {
-            throw new Error(json.msg || "Video tidak ditemukan atau link salah.");
+            throw new Error("Tautan tidak valid atau video bersifat privat.");
         }
     } catch (err) {
-        errorMsg.innerText = "Error: " + err.message;
+        errorMsg.innerText = "KESALAHAN: " + err.message;
         errorMsg.classList.remove('hidden');
-        console.error(err);
     } finally {
-        btn.innerText = "Ambil Video";
+        // MENGEMBALIKAN STATE TOMBOL
+        btnText.innerText = "AMBIL VIDEO";
+        btnLoader.classList.add('hidden');
         btn.disabled = false;
     }
 }
