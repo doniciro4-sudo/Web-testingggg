@@ -3,48 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Downloader Pro</title>
+    <title>TikTok Downloader HD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #0f172a; color: white; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background: #010101; font-family: 'sans-serif'; color: white; }
+        .tk-card { background: #121212; border: 1px solid #333; border-radius: 24px; }
+        .btn-gradient { background: linear-gradient(45deg, #ff0050, #00f2ea); }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-5">
 
-    <div class="max-w-md w-full glass-card p-8 rounded-3xl shadow-2xl">
+    <div class="w-full max-w-md tk-card p-8 shadow-2xl">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-black tracking-tight bg-gradient-to-br from-blue-400 to-purple-500 bg-clip-text text-transparent uppercase">
-                All-Loader
-            </h1>
-            <p class="text-slate-400 text-sm mt-1">Download TikTok & Instagram Reels</p>
+            <h1 class="text-3xl font-black mb-2 tracking-tighter">TIK-SAVE</h1>
+            <p class="text-gray-400 text-sm">Download Video TikTok Tanpa Watermark</p>
         </div>
 
         <div class="space-y-4">
             <input type="text" id="videoUrl" placeholder="Tempel link video di sini..." 
-                class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-500">
+                class="w-full p-4 rounded-xl bg-black border border-gray-700 focus:outline-none focus:border-cyan-400 transition-all text-white">
             
             <button onclick="fetchVideo()" id="btnAction"
-                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-900/20">
+                class="w-full btn-gradient text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-wider">
                 Ambil Video
             </button>
         </div>
 
-        <div id="result" class="hidden mt-8 space-y-4 pt-6 border-t border-slate-700">
-            <p class="text-center text-xs font-bold uppercase tracking-widest text-emerald-400">Video Berhasil Ditemukan</p>
-            
-            <button id="downloadBtn"
-                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
-                <span>Simpan Sekarang</span>
-            </button>
-            <p class="text-[10px] text-slate-500 text-center italic">Jika download tidak otomatis, tahan tombol dan pilih 'Simpan Link'</p>
+        <div id="result" class="hidden mt-8 pt-6 border-t border-gray-800 animate-pulse">
+            <div class="flex flex-col items-center gap-4">
+                <div class="bg-green-500/10 text-green-400 px-4 py-2 rounded-full text-xs font-bold uppercase">
+                    ✨ Video Siap!
+                </div>
+                <button id="downloadBtn" 
+                    class="w-full bg-white text-black font-black py-4 rounded-xl hover:bg-gray-200 transition-all">
+                    SIMPAN KE GALERI
+                </button>
+                <p class="text-[10px] text-gray-500 italic">Kualitas HD - Tanpa Watermark</p>
+            </div>
         </div>
 
-        <div id="errorBox" class="hidden mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <p id="errorMsg" class="text-red-400 text-center text-xs font-medium"></p>
-        </div>
+        <p id="errorMsg" class="hidden text-red-500 text-center mt-4 text-xs italic"></p>
     </div>
 
     <script src="script.js"></script>
