@@ -3,45 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyDownloader - No Watermark</title>
+    <title>Multi-Downloader Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        body { background: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-6">
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="max-w-md w-full glass p-8 rounded-3xl shadow-2xl">
+    <div class="max-w-md w-full glass-card p-8 rounded-3xl shadow-2xl">
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-                V-Get Pro
+            <h1 class="text-3xl font-black tracking-tight bg-gradient-to-br from-blue-400 to-purple-500 bg-clip-text text-transparent uppercase">
+                All-Loader
             </h1>
-            <p class="text-slate-400 mt-2 text-sm text-balance">Download video TikTok tanpa watermark secara instan.</p>
+            <p class="text-slate-400 text-sm mt-1">Download TikTok & Instagram Reels</p>
         </div>
 
         <div class="space-y-4">
-            <input type="text" id="videoUrl" placeholder="Tempel link TikTok di sini..." 
-                class="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+            <input type="text" id="videoUrl" placeholder="Tempel link video di sini..." 
+                class="w-full p-4 rounded-xl bg-slate-900/50 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-500">
             
             <button onclick="fetchVideo()" id="btnAction"
-                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-900/20">
                 Ambil Video
             </button>
         </div>
 
-        <div id="result" class="hidden mt-8 text-center space-y-4 animate-fade-in">
-            <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                <p class="text-emerald-400 text-sm font-medium">✨ Video siap diunduh!</p>
-            </div>
+        <div id="result" class="hidden mt-8 space-y-4 pt-6 border-t border-slate-700">
+            <p class="text-center text-xs font-bold uppercase tracking-widest text-emerald-400">Video Berhasil Ditemukan</p>
             
-            <button id="downloadBtn" 
-                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all">
-                Simpan ke Galeri
+            <button id="downloadBtn"
+                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                <span>Simpan Sekarang</span>
             </button>
+            <p class="text-[10px] text-slate-500 text-center italic">Jika download tidak otomatis, tahan tombol dan pilih 'Simpan Link'</p>
         </div>
 
-        <p id="errorMsg" class="hidden text-red-400 text-center mt-4 text-xs italic"></p>
+        <div id="errorBox" class="hidden mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p id="errorMsg" class="text-red-400 text-center text-xs font-medium"></p>
+        </div>
     </div>
 
     <script src="script.js"></script>
