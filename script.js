@@ -9,20 +9,19 @@ async function fetchVideo() {
 
     const url = input.value.trim();
     if (!url) {
-        input.classList.add('border-red-500');
-        setTimeout(() => input.classList.remove('border-red-500'), 1000);
+        input.style.borderColor = "#ff0050";
+        setTimeout(() => input.style.borderColor = "rgba(255, 255, 255, 0.1)", 1000);
         return;
     }
 
     // STATE LOADING (Tanpa Emoji)
-    btnText.innerText = "SEDANG MEMPROSES";
+    btnText.innerText = "PROSES PENGECEKAN";
     btnLoader.classList.remove('hidden');
     btn.disabled = true;
     resultDiv.classList.add('hidden');
     errorMsg.classList.add('hidden');
 
     try {
-        // Mengambil data dari API TikWM
         const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
         const json = await response.json();
 
@@ -31,7 +30,7 @@ async function fetchVideo() {
 
             downloadBtn.onclick = async (e) => {
                 e.preventDefault();
-                downloadBtn.innerText = "MENGUNDUH FILE...";
+                downloadBtn.innerText = "SEDANG MENGUNDUH...";
                 downloadBtn.disabled = true;
                 
                 try {
@@ -41,35 +40,31 @@ async function fetchVideo() {
                     
                     const a = document.createElement('a');
                     a.href = bUrl;
-                    a.download = `TikSave_Video_${Date.now()}.mp4`;
+                    a.download = `TIKSAVE_${Date.now()}.mp4`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     
-                    downloadBtn.innerText = "UNDUH SELESAI";
+                    downloadBtn.innerText = "UNDUH BERHASIL";
                     setTimeout(() => {
-                        downloadBtn.innerText = "SIMPAN KE GALERI";
+                        downloadBtn.innerText = "UNDUH SEKARANG";
                         downloadBtn.disabled = false;
                     }, 2000);
                 } catch (err) {
-                    // Fallback jika fetch blob gagal
                     window.open(videoUrl, '_blank');
-                    downloadBtn.innerText = "SIMPAN KE GALERI";
+                    downloadBtn.innerText = "UNDUH SEKARANG";
                     downloadBtn.disabled = false;
                 }
             };
 
-            // Menampilkan hasil dengan efek transisi
             resultDiv.classList.remove('hidden');
-            resultDiv.classList.add('fade-up');
         } else {
-            throw new Error("Tautan tidak valid atau video bersifat privat.");
+            throw new Error("TAUTAN TIDAK VALID ATAU PRIVAT");
         }
     } catch (err) {
         errorMsg.innerText = "KESALAHAN: " + err.message;
         errorMsg.classList.remove('hidden');
     } finally {
-        // MENGEMBALIKAN STATE TOMBOL
         btnText.innerText = "AMBIL VIDEO";
         btnLoader.classList.add('hidden');
         btn.disabled = false;
