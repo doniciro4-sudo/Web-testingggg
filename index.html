@@ -2,68 +2,79 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="monetag" content="42472501a171c9879976d0546dd6c0f5">
-    
-    <title>Server Monitoring 24 Jam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One Video Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #000; color: #0f0; text-align: center; font-family: monospace; padding-top: 50px; }
-        .box { border: 1px solid #0f0; display: inline-block; padding: 20px; background: #111; min-width: 320px; box-shadow: 0 0 15px #0f0; position: relative; }
-        .counter-text { font-size: 45px; font-weight: bold; margin: 20px 0; color: #fff; text-shadow: 0 0 10px #0f0; }
-        #user-ip { font-size: 10px; color: #555; margin-top: 10px; }
-        
-        /* Gaya untuk pembungkus iklan agar tetap bertema Hacker */
-        .ad-container {
-            margin-top: 25px;
-            display: inline-block;
-            border: 1px dashed #0f0;
-            padding: 10px;
-            min-width: 300px;
-            background: #050505;
-        }
+        body { background: #0f172a; color: white; font-family: sans-serif; }
+        .gradient-text { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="box">
-        <h2>[ SYSTEM ONLINE ]</h2>
-        <p>Target: doniciro4-sudo.github.io</p>
-        <hr color="#0f0">
-        
-        <p>PENGUNJUNG UNIK (IP BASED):</p>
-        <div id="visitor-count" class="counter-text">Memuat...</div>
-        
-        <p style="font-size: 11px; color: #888;">Setiap IP berbeda akan dihitung +1</p>
-        <div id="user-ip">Detecting your connection...</div>
-    </div>
+    <div class="max-w-md w-full bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
+        <h1 class="text-3xl font-bold text-center mb-2 gradient-text">V-Downloader</h1>
+        <p class="text-slate-400 text-center text-sm mb-6">Download Video TikTok & Instagram Gratis</p>
 
-    <br>
-
-    <div class="ad-container">
-        <p style="font-size: 9px; color: #0f0; margin-bottom: 5px;">[ ADVERTISEMENT ZONE ]</p>
-        
+        <div class="space-y-4">
+            <input type="text" id="videoUrl" placeholder="Tempel link video di sini..." 
+                class="w-full p-4 rounded-lg bg-slate-900 border border-slate-600 focus:outline-none focus:border-blue-500 text-white">
+            
+            <button onclick="fetchVideo()" id="btnAction"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition duration-300">
+                Ambil Video
+            </button>
         </div>
 
+        <div id="result" class="hidden mt-8 border-t border-slate-700 pt-6 animate-pulse">
+            <p class="text-center text-green-400 mb-4 font-semibold">Video Berhasil Ditemukan!</p>
+            <div id="preview" class="mb-4 rounded-lg overflow-hidden bg-black"></div>
+            <a id="downloadLink" href="#" target="_blank"
+                class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition duration-300">
+                Download Sekarang (MP4)
+            </a>
+        </div>
+
+        <p id="errorMsg" class="hidden text-red-500 text-center mt-4 text-sm"></p>
+    </div>
+
     <script>
-        async function getCount() {
+        async function fetchVideo() {
+            const url = document.getElementById('videoUrl').value;
+            const btn = document.getElementById('btnAction');
+            const resultDiv = document.getElementById('result');
+            const errorMsg = document.getElementById('errorMsg');
+            const downloadBtn = document.getElementById('downloadLink');
+
+            if (!url) return alert("Tempel link-nya dulu bos!");
+
+            // Reset UI
+            btn.innerText = "Sedang Memproses...";
+            btn.disabled = true;
+            resultDiv.classList.add('hidden');
+            errorMsg.classList.add('hidden');
+
             try {
-                // Catatan: countapi.xyz sering down, ini fallback ke angka random jika error
-                const url = "https://api.countapi.xyz/hit/doniciro4_sudo_final_v2/visits";
-                const response = await fetch(url);
+                // Kita pakai API publik tikwm untuk TikTok (Sangat Stabil)
+                // Jika ingin IG, kamu perlu API Key dari RapidAPI
+                const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
                 const data = await response.json();
-                document.getElementById('visitor-count').innerText = data.value;
-            } catch (e) {
-                document.getElementById('visitor-count').innerText = Math.floor(Math.random() * 20) + 10;
+
+                if (data.code === 0) {
+                    // Berhasil ambil data
+                    downloadBtn.href = "https://www.tikwm.com" + data.data.play;
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    throw new Error("Link tidak valid atau video tidak ditemukan.");
+                }
+            } catch (err) {
+                errorMsg.innerText = err.message;
+                errorMsg.classList.remove('hidden');
+            } finally {
+                btn.innerText = "Ambil Video";
+                btn.disabled = false;
             }
         }
-
-        fetch('https://api.ipify.org?format=json')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('user-ip').innerText = "Your IP: " + data.ip;
-            });
-
-        getCount();
     </script>
-
-    </body>
+</body>
 </html>
